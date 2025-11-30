@@ -165,7 +165,6 @@ namespace MVCandKAFKA3.Services
                 }
                 catch
                 {
-                    // Noto'g'ri qatorni o'tkazib yuborish
                     continue;
                 }
             }

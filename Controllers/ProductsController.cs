@@ -106,7 +106,7 @@ namespace MVCandKAFKA3.Controllers
                 product.CreatedDate = DateTime.UtcNow;
                 _context.Add(product);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Mahsulot muvaffaqiyatli qo'shildi!";
+                TempData["Success"] = " Mahsulot muvaffaqiyatli qo'shildi!";
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -135,7 +135,7 @@ namespace MVCandKAFKA3.Controllers
                     product.UpdatedDate = DateTime.UtcNow;
                     _context.Update(product);
                     await _context.SaveChangesAsync();
-                    TempData["Success"] = "✅ Mahsulot muvaffaqiyatli yangilandi!";
+                    TempData["Success"] = " Mahsulot muvaffaqiyatli yangilandi!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -166,7 +166,7 @@ namespace MVCandKAFKA3.Controllers
             {
                 _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Mahsulot o'chirildi!";
+                TempData["Success"] = "Mahsulot o'chirildi!";
             }
             return RedirectToAction(nameof(Index));
         }
@@ -201,13 +201,13 @@ namespace MVCandKAFKA3.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                TempData["Error"] = "❌ Iltimos, fayl tanlang!";
+                TempData["Error"] = "Iltimos, fayl tanlang!";
                 return View();
             }
 
             if (!file.FileName.EndsWith(".xlsx") && !file.FileName.EndsWith(".xls"))
             {
-                TempData["Error"] = "❌ Faqat Excel fayllari qabul qilinadi!";
+                TempData["Error"] = "Faqat Excel fayllari qabul qilinadi!";
                 return View();
             }
 
@@ -218,7 +218,7 @@ namespace MVCandKAFKA3.Controllers
 
                 if (products.Count == 0)
                 {
-                    TempData["Error"] = "❌ Excel faylda ma'lumot topilmadi!";
+                    TempData["Error"] = "Excel faylda ma'lumot topilmadi!";
                     return View();
                 }
 
@@ -228,13 +228,13 @@ namespace MVCandKAFKA3.Controllers
                 }
 
                 await _context.SaveChangesAsync();
-                TempData["Success"] = $"✅ {products.Count} ta mahsulot yuklandi!";
+                TempData["Success"] = $"{products.Count} ta mahsulot yuklandi!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Excel import xatolik");
-                TempData["Error"] = $"❌ Xatolik: {ex.Message}";
+                TempData["Error"] = $"Xatolik: {ex.Message}";
                 return View();
             }
         }
@@ -254,20 +254,20 @@ namespace MVCandKAFKA3.Controllers
             {
                 if (selectedIds == null || !selectedIds.Any())
                 {
-                    TempData["Error"] = "❌ Hech qanday mahsulot tanlanmagan!";
+                    TempData["Error"] = "Hech qanday mahsulot tanlanmagan!";
                     return RedirectToAction(nameof(Index));
                 }
                 products = await _context.Products.Where(p => selectedIds.Contains(p.Id)).ToListAsync();
             }
             else
             {
-                TempData["Error"] = "❌ Noto'g'ri so'rov!";
+                TempData["Error"] = "Noto'g'ri so'rov!";
                 return RedirectToAction(nameof(Index));
             }
 
             if (!products.Any())
             {
-                TempData["Error"] = "❌ Yuborish uchun mahsulotlar yo'q!";
+                TempData["Error"] = "Yuborish uchun mahsulotlar yo'q!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -293,7 +293,7 @@ namespace MVCandKAFKA3.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["Success"] = $"✅ {successCount} ta mahsulot Kafka'ga yuborildi!";
+            TempData["Success"] = $"{successCount} ta mahsulot Kafka'ga yuborildi!";
             return RedirectToAction(nameof(Index));
         }
 
