@@ -15,13 +15,11 @@ public class Product
     public string Category { get; set; }
 
     [Required]
-    [Range(0, double.MaxValue, ErrorMessage = "Narx 0 dan katta bo'lishi kerak")]
     public decimal Price { get; set; }
 
     [StringLength(500)]
     public string Description { get; set; }
 
-    [Range(0, int.MaxValue, ErrorMessage = "Miqdor 0 dan katta bo'lishi kerak")]
     public int Quantity { get; set; }
 
     [StringLength(50)]
