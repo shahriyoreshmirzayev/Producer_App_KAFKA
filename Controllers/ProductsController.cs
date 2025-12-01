@@ -223,20 +223,20 @@ namespace MVCandKAFKA3.Controllers
             {
                 if (selectedIds == null || !selectedIds.Any())
                 {
-                    TempData["Error"] = "Hech qanday mahsulot tanlanmagan!";
+                    TempData["Error"] = "Tanlanmagan!";
                     return RedirectToAction(nameof(Index));
                 }
                 products = await _context.Products.Where(p => selectedIds.Contains(p.Id)).ToListAsync();
             }
             else
             {
-                TempData["Error"] = "Noto'g'ri so'rov!";
+                TempData["Error"] = "Xatolik!";
                 return RedirectToAction(nameof(Index));
             }
 
             if (!products.Any())
             {
-                TempData["Error"] = "Yuborish uchun mahsulotlar yo'q!";
+                TempData["Error"] = "Mahsulotlar yo'q!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -256,13 +256,13 @@ namespace MVCandKAFKA3.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Kafka xatolik: {ProductName}", product.Name);
+                    _logger.LogError(ex, "Xatolik", product.Name);
                 }
                 await Task.Delay(50);
             }
 
             await _context.SaveChangesAsync();
-            TempData["Success"] = $"{successCount} ta mahsulot Kafka'ga yuborildi!";
+            TempData["Success"] = $"{successCount} ta yuborildi!";
             return RedirectToAction(nameof(Index));
         }
 
