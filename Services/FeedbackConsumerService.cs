@@ -11,6 +11,7 @@ namespace MVCandKAFKA3.Services
         public string? RejectionReason { get; set; }
         public DateTime ReviewedDate { get; set; }
         public string? ReviewedBy { get; set; }
+        public string? Comments { get; set; } 
     }
 
     public class FeedbackConsumerService : BackgroundService
@@ -44,7 +45,8 @@ namespace MVCandKAFKA3.Services
             using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
             consumer.Subscribe(_configuration["Kafka:FeedbackTopic"]);
 
-            _logger.LogInformation("Consumer ishga tushdi");
+            _logger.LogInformation("Feedback Consumer ishga tushdi - Topic: {Topic}",
+                _configuration["Kafka:FeedbackTopic"]);
 
             try
             {
@@ -58,6 +60,7 @@ namespace MVCandKAFKA3.Services
                         {
                             await ProcessFeedback(result.Message.Value);
                             consumer.Commit(result);
+                            _logger.LogInformation("Xatolik", result.Offset);
                         }
                     }
                     catch (Exception ex)
@@ -82,7 +85,11 @@ namespace MVCandKAFKA3.Services
             {
                 var feedback = JsonSerializer.Deserialize<ApprovalFeedback>(message);
 
-                if (feedback == null) return;
+                if (feedback == null)
+                {
+                    _logger.LogWarning("Xatolik");
+                    return;
+                }
 
                 using var scope = _serviceProvider.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -97,12 +104,20 @@ namespace MVCandKAFKA3.Services
 
                 product.KafkaStatus = feedback.Status;
                 product.RejectionReason = feedback.RejectionReason;
+                product.ReviewedDate = feedback.ReviewedDate;
+                product.ReviewedBy = feedback.ReviewedBy;
+                product.ReviewComments = feedback.Comments; 
                 product.UpdatedDate = DateTime.UtcNow;
 
                 await context.SaveChangesAsync();
 
-                _logger.LogInformation("Xatolik",
-                    feedback.ProductId, feedback.Status);
+                _logger.LogInformation(
+                    "Qabul qilindi",
+                    feedback.ProductId, feedback.Status, feedback.ReviewedBy ?? "Unknown");
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(ex, "Xatolik: ", message);
             }
             catch (Exception ex)
             {

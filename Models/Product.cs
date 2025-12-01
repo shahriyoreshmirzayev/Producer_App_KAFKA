@@ -32,6 +32,9 @@ public class Product
     public DateTime? SentToKafkaDate { get; set; }
     public string? KafkaStatus { get; set; } 
     public string? RejectionReason { get; set; }
+    public DateTime? ReviewedDate { get; set; }
+    public string? ReviewedBy { get; set; }
+    public string? ReviewComments { get; set; }
 }
 public class PaginatedList<T>
 {
