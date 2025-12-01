@@ -133,6 +133,44 @@ else
                                 }
                             </td>
                             <td>
+                                @if (item.KafkaStatus == "Approved" || item.KafkaStatus == "Rejected")
+                                {
+                                    <div class="feedback-info">
+                                        @if (item.ReviewedDate.HasValue)
+                                        {
+                                            <div class="feedback-row">
+                                                <span class="feedback-label"> Sana:</span>
+                                                <span class="feedback-value">@item.ReviewedDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                                            </div>
+                                        }
+                                         @if (!string.IsNullOrEmpty(item.ReviewedBy))
+                                        {
+                                            <div class="feedback-row">
+                                                <span class="feedback-label">👤 Kim:</span> 
+                                                <span class="feedback-value">@item.ReviewedBy</span>
+                                            </div>
+                                        } 
+                                        @if (!string.IsNullOrEmpty(item.RejectionReason))
+                                        {
+                                            <div class="feedback-row rejection-reason">
+                                                <span class="feedback-label">❌ Sabab:</span>
+                                                <span class="feedback-value">@item.RejectionReason</span>
+                                            </div>
+                                        }
+                                       
+                                            <div class="feedback-row comments">
+                                                <span class="feedback-label">💬 Izoh:</span>
+                                                <span class="feedback-value">@item.ReviewComments</span>
+                                            </div>
+                                       
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>
                                 <div class="action-buttons">
                                     <a href="@Url.Action("Edit", new { id = item.Id })" class="btn-icon btn-edit" title="Tahrirlash">✏️</a>
                                     <a href="@Url.Action("Delete", new { id = item.Id })" class="btn-icon btn-delete" title="O'chirish">🗑️</a>
@@ -494,6 +532,66 @@ else
         color: #383d41;
     }
 
+    /* Feedback Info */
+    .feedback-info {
+        font-size: 0.85rem;
+    }
+
+    .feedback-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+        align-items: flex-start;
+    }
+
+    .feedback-label {
+        font-weight: 600;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+
+    .feedback-value {
+        color: #212529;
+    }
+
+    .feedback-row.rejection-reason {
+        background-color: #fff3cd;
+        padding: 0.4rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+    }
+
+    .feedback-row.rejection-reason .feedback-label {
+        color: #856404;
+    }
+
+    .feedback-row.rejection-reason .feedback-value {
+        color: #856404;
+        font-weight: 500;
+    }
+
+    .feedback-row.comments {
+        background-color: #e7f3ff;
+        padding: 0.4rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .feedback-row.comments .feedback-label {
+        color: #0066cc;
+    }
+
+    .feedback-row.comments .feedback-value {
+        color: #004085;
+        font-style: italic;
+    }
+
+    .text-muted {
+        color: #6c757d;
+    }
+
     /* Action Buttons */
     .action-buttons {
         display: flex;
@@ -590,7 +688,7 @@ else
     }
 
     /* Responsive */
- 
+  
 
         .header-actions {
             flex-direction: column;

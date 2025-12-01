@@ -124,7 +124,6 @@ namespace MVCandKAFKA3.Services
                 return false;
             }
         }
-
         public void Dispose()
         {
             _producer?.Flush(TimeSpan.FromSeconds(10));
