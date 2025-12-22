@@ -1,7 +1,6 @@
-﻿using MVCandKAFKA3.Models;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 
-namespace MVCandKAFKA3.Services;
+namespace MVCandKAFKA3;
 
 public class ExcelService
 {
@@ -79,7 +78,7 @@ public class ExcelService
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(category))
                     continue;
                 var product = new Product
-                {   
+                {
                     Name = name,
                     Category = category,
                     Price = decimal.Parse(worksheet.Cells[row, 3].Value?.ToString() ?? "0"),

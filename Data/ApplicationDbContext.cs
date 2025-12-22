@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MVCandKAFKA3.Models;
 
-namespace MVCandKAFKA3.Data;
+namespace MVCandKAFKA3;
 
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     { }
 
-    public DbSet<Product> Products { get; set; } 
+    public DbSet<Product> Products { get; set; }
 }

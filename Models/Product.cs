@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MVCandKAFKA3.Models;
+namespace MVCandKAFKA3;
 
 public class Product
 {

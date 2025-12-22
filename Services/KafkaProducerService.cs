@@ -1,8 +1,7 @@
 ﻿using Confluent.Kafka;
-using MVCandKAFKA3.Models;
 using System.Text.Json;
 
-namespace MVCandKAFKA3.Services;
+namespace MVCandKAFKA3;
 
 public class KafkaProducerService
 {

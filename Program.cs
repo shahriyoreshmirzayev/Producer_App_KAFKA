@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using MVCandKAFKA3.Data;
-using MVCandKAFKA3.Services;
+using MVCandKAFKA3;
 
 var builder = WebApplication.CreateBuilder(args);
 
