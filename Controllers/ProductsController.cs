@@ -146,9 +146,7 @@ public class ProductsController : Controller
         }
         return RedirectToAction(nameof(Index));
     }
-
-
-
+     
     public async Task<IActionResult> ExportToExcel()
     {
         var products = await _context.Products.ToListAsync();
@@ -220,46 +218,79 @@ public class ProductsController : Controller
         {
             if (selectedIds == null || !selectedIds.Any())
             {
-                TempData["Error"] = "Tanlanmagan!";
+                TempData["Error"] = "Hech qanday mahsulot tanlanmagan!";
                 return RedirectToAction(nameof(Index));
             }
             products = await _context.Products.Where(p => selectedIds.Contains(p.Id)).ToListAsync();
         }
         else
         {
-            TempData["Error"] = "Xatolik!";
+            TempData["Error"] = "Noto'g'ri so'rov!";
             return RedirectToAction(nameof(Index));
         }
 
         if (!products.Any())
         {
-            TempData["Error"] = "Mahsulotlar yo'q!";
+            TempData["Error"] = "Yuborish uchun mahsulotlar yo'q!";
             return RedirectToAction(nameof(Index));
         }
 
         int successCount = 0;
+        int errorCount = 0;
+        var errorProducts = new List<string>();
+
         foreach (var product in products)
         {
+            using var dbTransaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
-                var result = await _kafkaService.SendMessageAsync(product);
-                if (result)
+                _logger.LogInformation("Processing Product: {ProductName} (ID: {ProductId})",
+                    product.Name, product.Id);
+
+                var kafkaResult = await _kafkaService.SendMessageAsync(product);
+
+                if (!kafkaResult)
                 {
-                    product.IsSentToKafka = true;
-                    product.SentToKafkaDate = DateTime.UtcNow;
-                    product.KafkaStatus = "Pending";
-                    successCount++;
+                    throw new Exception("Kafka send failed");
                 }
+
+                product.IsSentToKafka = true;
+                product.SentToKafkaDate = DateTime.UtcNow;
+                product.KafkaStatus = "Pending";
+                product.UpdatedDate = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                await dbTransaction.CommitAsync();
+
+                successCount++;
+                _logger.LogInformation("Product sent successfully: {ProductName}", product.Name);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Xatolik", product.Name);
+                await dbTransaction.RollbackAsync();
+                errorCount++;
+                errorProducts.Add(product.Name);
+                _logger.LogError(ex, "Failed to send product: {ProductName}", product.Name);
             }
+
             await Task.Delay(50);
         }
 
-        await _context.SaveChangesAsync();
-        TempData["Success"] = $"{successCount} ta yuborildi!";
+        if (successCount > 0 && errorCount == 0)
+        {
+            TempData["Success"] = $"{successCount} ta mahsulot Kafka'ga muvaffaqiyatli yuborildi!";
+        }
+        else if (successCount > 0 && errorCount > 0)
+        {
+            TempData["Warning"] = $"{successCount} ta yuborildi, {errorCount} ta xatolik: {string.Join(", ", errorProducts)}";
+        }
+        else
+        {
+            TempData["Error"] = $"Hech qanday mahsulot yuborilmadi! Xatolik: {string.Join(", ", errorProducts)}";
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
